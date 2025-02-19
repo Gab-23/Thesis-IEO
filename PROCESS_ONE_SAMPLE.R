@@ -11,10 +11,14 @@ PROCESS_ONE_SAMPLE <- function(sample_id,
   obj_mask <- grep(pattern = "*.rds", file_names_in_sample_folder)
   fragments_mask <- grep(pattern = "*.tsv.gz", file_names_in_sample_folder)
   
+  if ((length(obj_mask) == 0) || (length(fragments_mask) == 0)) {
+    stop("Either fragments.tsv.gz file or .rds file do not exist!")    
+  }
+  
   # DEFINE PATHS
   obj_path <- paste0(sample_id,"/",file_names_in_sample_folder[obj_mask])
   fragments_path <- paste0(sample_id,"/",file_names_in_sample_folder[fragments_mask])
-  
+
   # READ RDS OBJECT
   obj <- readRDS(obj_path)
   
