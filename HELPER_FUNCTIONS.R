@@ -118,3 +118,43 @@ plot_log2FC <- function(DACRs_df, thr = 0.05) {
   
   return(p)
 }
+
+plot_log2FC_collapsed <- function(DACRs_df, thr = 0.05) {
+  
+  chr_midpoints <- DACRs_df %>%
+    group_by(chr) %>%
+    summarise(midpoint = mean(absolute_midpoints, na.rm = TRUE))
+  
+  chr_labels <- unique(DACRs_df$chr)
+  if (length(chr_labels) > 1) {
+    title_chr <- "[WHOLE GENOME]"
+  } else {
+    title_chr <- paste0("[", chr_labels, "]")
+  }
+  
+  p <- ggplot(DACRs_df, aes(x = absolute_midpoints, y = mean_log2FC, 
+                            color = mean_log2FC,
+                            size = n_of_significant_per_bin)) +
+    geom_point() +
+    scale_color_gradient(low = "blue", high = "red") +
+    scale_size_continuous(range = c(0.5,6)) +
+    theme_minimal() +
+    labs(x = "", 
+         y = "mean log2FC", 
+         title = paste("Manhattan Plot", title_chr), 
+         subtitle = "Genomic Coordinates vs mean Log2FC [Tumor VS CNCs]") +
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 20),
+      axis.title.y = element_text(size = 15),
+      axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1, size = 15), 
+      axis.text.y = element_text(size = 15)
+    ) +
+    scale_x_continuous(
+      breaks = chr_midpoints$midpoint,
+      labels = chr_midpoints$chr
+    ) +
+    ylim(-(max(abs(DACRs_df$mean_log2FC))),
+         max(abs(DACRs_df$mean_log2FC)))
+  
+  return(p)
+}
