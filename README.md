@@ -1,6 +1,6 @@
 # Folder Organization
 
-## scripts
+## scripts/
 Inside this folder you find all the scripts used to generate the Target Variable, representing Chromatin Accessibility during Tumor Onset.
 They are organized as follows:
 
@@ -10,7 +10,9 @@ They are organized as follows:
 - HELPER_FUNCTIONS.R contains all smaller helper functions used along all the scripts
 - All files starting with H refer to the main helper function. The number after the H refers to the script they refer to
 - All main processing steps are divided in different scripts and numbered according to the order to be followed
-- 
 
-
-## ML
+## ML/
+Inside this folder you find all the Machine Learning Related jupyter notebooks and all the objects saved as an output. All random seeds have been set so that results will be fully reproducible.
+Files are organized as follows:
+- Each Machine Learning approach (Regression, Binary Classification, Multiclass Classification) is split among 3 different notebooks:
+  -  
