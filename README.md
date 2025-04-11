@@ -12,7 +12,10 @@ They are organized as follows:
 - All main processing steps are divided in different scripts and numbered according to the order to be followed
 
 ## ML/
-Inside this folder you find all the Machine Learning Related jupyter notebooks and all the objects saved as an output. All random seeds have been set so that results will be fully reproducible.
+Inside this folder you find all the Machine Learning Related jupyter notebooks and all the objects saved as an output. 
 Files are organized as follows:
 - Each Machine Learning approach (Regression, Binary Classification, Multiclass Classification) is split among 3 different notebooks:
-  -  
+  -  \<approach\>_Pipeline: Contains the model training and saves all needed files in \<approach\>_Output/
+    NOTE: All random seeds have been set in order to ensure a fully reproducible analysis
+  -  \<approach\>_Feature_Interpretation: Containing explorative analysis for model debugging and feature interpretation
+  -  \<approach\>_Test_Set_Evaluation: Contain final evaluations on Test Set
