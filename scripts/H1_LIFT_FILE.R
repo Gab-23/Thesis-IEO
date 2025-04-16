@@ -25,11 +25,20 @@ LIFT_FILE <- function(file_path, chain_path, mode){
     lifted_granges_filtered <- lifted_granges[-mappings_to_discard]
     lifted_granges_filtered_unlisted <- unlist(lifted_granges_filtered) # get the GRanges object, note that when unlisting, mapping failures (encoded as empty GRanges) will disappear
     
+    lifted_granges_filtered_unlisted_sorted <- sort(lifted_granges_filtered_unlisted)
+    invalid_idx <- which(start(lifted_granges_filtered_unlisted_sorted) > end(lifted_granges_filtered_unlisted_sorted))
+    
+    if (length(invalid_idx) > 0){
+      lifted_granges_filtered_unlisted_sorted_clean <- lifted_granges_filtered_unlisted_sorted[-invalid_idx]
+    } else {
+      lifted_granges_filtered_unlisted_sorted_clean <- lifted_granges_filtered_unlisted_sorted
+    } 
+    
     failed_or_split_fragments <- (length(granges_unlifted@ranges@width) - # display number of discarded regions
-                                    length(lifted_granges_filtered_unlisted@ranges@width))
+                                    length(lifted_granges_filtered_unlisted_sorted_clean@ranges@width))
     
     summary_width_unlifted <- summary(granges_unlifted@ranges@width) # get distribution summaries
-    summary_width_lifted <- summary(lifted_granges_filtered_unlisted@ranges@width)
+    summary_width_lifted <- summary(lifted_granges_filtered_unlisted_sorted_clean@ranges@width)
     
     print(paste0("# DISCARDED FRAGMENTS DURING LIFTING PROCESS: ", failed_or_split_fragments))
     cat("\n")
@@ -40,7 +49,7 @@ LIFT_FILE <- function(file_path, chain_path, mode){
     print("PRINTING WIDTH DISTRIBUTION SUMMARY AFTER LIFTING: ")
     print(summary_width_lifted)
     
-    df <- as.data.frame(lifted_granges_filtered_unlisted) # create a df for .bed file writing
+    df <- as.data.frame(lifted_granges_filtered_unlisted_sorted_clean) # create a df for .bed file writing
     df$strand <- NULL # remove useless columns
     df$width <- NULL
     
@@ -75,8 +84,8 @@ LIFT_FILE <- function(file_path, chain_path, mode){
     summary_width_lifted <- summary(lifted_granges_filtered_unlisted@ranges@width)
     summary_width_cleaned <- summary(lifted_granges_filtered_unlisted_clean@ranges@width)
     
-    print(paste0("# DISCARDED FRAGMENTS DURING LIFTING PROCESS: ", failed_or_split_fragments))
-    print(paste0("# DISCARDED FRAGMENTS DURING CLEANING PROCESS: ", cleaned_fragments))
+    print(paste0("# DISCARDED PEAKS DURING LIFTING PROCESS: ", failed_or_split_fragments))
+    print(paste0("# DISCARDED PEAKS DURING CLEANING PROCESS: ", cleaned_fragments))
     cat("\n")
     
     print("PRINTING WIDTH DISTRIBUTION SUMMARY BEFORE LIFTING: ")
