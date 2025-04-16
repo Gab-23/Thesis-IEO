@@ -32,6 +32,7 @@ import_libraries <- function(){
   library(data.table)
   library(Hmisc)
   library(rCGH)
+  library(geneviewer)
   
 } # function to import all needed libraries
 
@@ -39,12 +40,17 @@ load_variables <- function(match_tumor_cnc_path = NULL, # load all needed variab
                            cohort_ids_file_path = NULL, 
                            blacklist_path = NULL, 
                            samples_folder_path = NULL, 
+                           chain_path = NULL,
                            unlifted_peaks_path = NULL, 
-                           chain_path = NULL, 
+                           lifted_peaks_path = NULL,
+                           bash_script = NULL,
+                           conda_env = NULL,
+                           complementary = NULL,
                            plots_outdir = NULL, 
                            files_outdir = NULL,
                            seg_file_dir = NULL,
                            tables_dir = NULL,
+                           scripts_dir = NULL,
                            genome_assembly_str = NULL, 
                            genome_assembly = NULL, 
                            genome_assembly_code = NULL, 
@@ -57,6 +63,7 @@ load_variables <- function(match_tumor_cnc_path = NULL, # load all needed variab
                            collapsed_DACRs_df_name = NULL,
                            whole_genome_plot_name = NULL, 
                            mode = NULL,
+                           with_epianeufinder = NULL,
                            lift_files = NULL,
                            make_plots = NULL,
                            simple_avg = NULL,
@@ -85,6 +92,7 @@ load_variables <- function(match_tumor_cnc_path = NULL, # load all needed variab
   PLOTS_OUTDIR <<- plots_outdir # plots directories
   FILES_OUTDIR <<- files_outdir # files directories
   TABLES_DIR <<- tables_dir # tables directory
+  SCRIPTS_DIR <<- scripts_dir # scripts directory
   SEG_FILE_DIR <<- seg_file_dir # segmentation files directory
   
   MATCH_TUMOR_CNC_PATH <<- match_tumor_cnc_path # matching tumor type and corresponding CNC
@@ -98,10 +106,13 @@ load_variables <- function(match_tumor_cnc_path = NULL, # load all needed variab
                                      recursive = TRUE)
   }
   
-  
+  CHAIN_PATH <<- chain_path
   UNLIFTED_PEAKS_PATH <<- unlifted_peaks_path
   
-  CHAIN_PATH <<- chain_path
+  LIFTED_PEAKS_PATH <<- lifted_peaks_path
+  BASH_SCRIPT <<- bash_script
+  CONDA_ENV <<- conda_env
+  COMPLEMENTARY <<- complementary
   
   # read tables
   if (!is.null(MATCH_TUMOR_CNC_PATH)) {
@@ -164,6 +175,7 @@ load_variables <- function(match_tumor_cnc_path = NULL, # load all needed variab
     chrom_cum_start <<- c(0, cumsum(as.numeric(chrom_sizes_canon[-length(chrom_sizes_canon)]))) # get cumulative starts
     names(chrom_cum_start) <<- names(chrom_sizes_canon)
     
+    BOOL_WITH_EPIANEUFINDER <<- with_epianeufinder
     BOOL_LIFT_FILES <<- lift_files
     BOOL_MAKE_PLOTS <<- make_plots
     BOOL_SIMPLE_AVG <<- simple_avg
