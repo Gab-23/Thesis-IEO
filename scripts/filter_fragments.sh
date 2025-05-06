@@ -2,11 +2,22 @@
 
 CANCER_TYPE="$1"
 ORIGINAL_PEAKS="$2"
-CONDA_ENV="$3"
-COMPLEMENTARY="$4"
+COMPLEMENTARY="$3"
 
 source ~/miniconda3/etc/profile.d/conda.sh
-conda activate $CONDA_ENV
+
+if [ $1 = "-h" ] | [ $1 = "--help" ]; then
+        echo -e "\n"
+        echo "HOW TO USE: "
+        echo "./filter_fragments.sh 
+  [CANCER_TYPE]
+  [ORIGINAL_PEAKS]
+  [COMPLEMENTARY]"
+        echo -e "\n"
+        exit 0
+fi
+
+conda activate fragments_filtering_env
 
 fragments_array=$(find /home/ieo7429/Desktop/THESIS_GAB/samples/$CANCER_TYPE/HT* -type f -name "*fragments_lifted.tsv.gz")
 

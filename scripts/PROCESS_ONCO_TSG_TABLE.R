@@ -1,12 +1,20 @@
 source("/home/ieo7429/Desktop/THESIS_GAB/scripts/HELPER_FUNCTIONS.R")
 import_libraries()
 
-unprocessed_table <- read.delim("/home/ieo7429/Desktop/THESIS_GAB/tables/cancerGeneList.tsv", 
+load_variables(genome_assembly = BSgenome.Hsapiens.UCSC.hg19,
+               window_size = 1000000,
+               tables_dir = "/home/ieo7429/Desktop/THESIS_GAB/tables/",
+               backbone_path = paste0("/home/ieo7429/Desktop/THESIS_GAB/tables/backbone_", WINDOW_SIZE_STRING, ".tsv"))
+
+backbone <- read.table(file = backbone_path, header = T, sep = "\t")
+
+unprocessed_table <- read.delim(paste0(TABLES_DIR, "cancerGeneList.tsv"), 
                                 header = TRUE, sep = "\t", quote = "", stringsAsFactors = FALSE)
 
 unprocessed_table <- unprocessed_table[,c(1,7,8)]
 
-to_discard <- which((unprocessed_table$Is.Oncogene == "Yes") & (unprocessed_table$Is.Tumor.Suppressor.Gene == "Yes"))
+to_discard <- which((unprocessed_table$Is.Oncogene == "Yes") & 
+                      (unprocessed_table$Is.Tumor.Suppressor.Gene == "Yes"))
 
 unprocessed_table_clean <- unprocessed_table[-to_discard,]
 
@@ -21,8 +29,8 @@ ensembl37 <- biomaRt::useMart("ENSEMBL_MART_ENSEMBL",
 
 genes <- unprocessed_table_clean$Hugo.Symbol
 
-coords <- biomaRt::getBM(attributes = c("hgnc_symbol", "chromosome_name", 
-                                        "start_position", "end_position", 
+coords <- biomaRt::getBM(attributes = c("hgnc_symbol", 
+                                        "chromosome_name", "start_position", "end_position",
                                         "strand", "gene_biotype"),
                          filters = "hgnc_symbol",
                          values = genes,
@@ -37,12 +45,11 @@ processed_data_clean <- processed_data[processed_data$chromosome_name %in% accep
 processed_data_clean$chromosome_name <- paste0("chr",processed_data_clean$chromosome_name)
 colnames(processed_data_clean) <- c("hugo_symbol", "type", "chr", "start", "end")
 
-write.table(x = processed_data_clean, file = "/home/ieo7429/Desktop/THESIS_GAB/tables/ONCO_TSG_TABLE_hg19.tsv", 
+write.table(x = processed_data_clean, 
+            file = paste0(TABLES_DIR,"ONCO_TSG_TABLE_hg19_", WINDOW_SIZE_STRING , ".tsv"), 
             sep = "\t", col.names = TRUE, row.names = FALSE)
 
-
-chrom_sizes_canon <- seqlengths(BSgenome.Hsapiens.UCSC.hg19)[1:22]
-windows <- define_windows(1000000, chrom_sizes_canon)
+windows <- define_windows(WINDOW_SIZE, chrom_sizes_canon)
 
 processed_data_granges <- GRanges(seqnames = processed_data_clean$chr, 
                                              ranges = IRanges(processed_data_clean$start, 
@@ -76,17 +83,17 @@ final_df[is.na(final_df)] <- 0
 
 final_df$genes <- ifelse(final_df$genes == 0, NA, final_df$genes)
 final_df$types <- ifelse(final_df$types == 0, NA, final_df$types)
-
-
-final_df$width <- NULL
-final_df$strand <- NULL
-final_df$window_id <- NULL
+final_df$width <- NULL; final_df$strand <- NULL; final_df$window_id <- NULL
 
 colnames(final_df) <- c("chr", "start", "end", 
                         "genes", "types", 
-                        "n_of_genes", "n_of_TSGs", "n_of_OGs")
+                        "n_of_cancer_genes", "n_of_TSGs", "n_of_OGs")
+
+
+final_df <- merge(x = backbone, y = final_df, by = c("chr", "start", "end"))
+final_df$chr <- NULL; final_df$start <- NULL; final_df$end <- NULL
 
 write.table(final_df, 
-            file = "/home/ieo7429/Desktop/THESIS_GAB/tables/ANNOTATED_WINDOWS_AGGREGATED_hg19.tsv", 
+            file = paste0(TABLES_DIR, "ANNOTATED_WINDOWS_AGGREGATED_hg19_", WINDOW_SIZE_STRING, ".tsv"), 
             sep = "\t", col.names = TRUE, row.names = FALSE)
 
