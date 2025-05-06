@@ -3,3 +3,5 @@ outfiles/
 plots/
 samples/
 tables/
+bulk_ATAC/
+scripts/hic_qc/

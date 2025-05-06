@@ -9,8 +9,8 @@ import_libraries()
 
 files_paths <- c("/home/ieo7429/Desktop/THESIS_GAB/scripts/H1_EPIANEUFINDER_BIN_FILTERING.R",
                  "/home/ieo7429/Desktop/THESIS_GAB/scripts/H1_NO_PROCESSING_VANILLA.R",
+                 "/home/ieo7429/Desktop/THESIS_GAB/scripts/H1_LIFT_FILE.R",
                  "/home/ieo7429/Desktop/THESIS_GAB/scripts/H2.1_REGRESS_OUT_COHORT.R",
-                 "/home/ieo7429/Desktop/THESIS_GAB/scripts/LIFT_FILE.R",
                  "/home/ieo7429/Desktop/THESIS_GAB/scripts/my_makeWindows.R")
 
 import_scripts(files_paths = files_paths)
@@ -31,7 +31,7 @@ load_variables(tables_dir = "/home/ieo7429/Desktop/THESIS_GAB/tables/",
                genome_assembly_str = "BSgenome.Hsapiens.UCSC.hg19", 
                genome_assembly = BSgenome.Hsapiens.UCSC.hg19, 
                genome_assembly_code = "hg19", 
-               window_size = 1000000, 
+               window_size = 100000, 
                cancer_type = "BRCA", 
                workers = 25, 
                alpha = 0.05, 
@@ -55,10 +55,10 @@ load_variables(tables_dir = "/home/ieo7429/Desktop/THESIS_GAB/tables/",
 
 # load markers list for BRCA_BASAL and BRCA_NON_BASAL and process them
 
-load(paste0(FILES_OUTDIR, "no_processing/markers_list_no_processing_BRCA_BASAL_1Mbp_hg19_LR.RData"))
+load(paste0(FILES_OUTDIR, "no_processing/markers_list_no_processing_BRCA_BASAL_0.1Mbp_hg19_LR.RData"))
 markers_list_BASAL <- markers_list
 
-load(paste0(FILES_OUTDIR, "no_processing/markers_list_no_processing_BRCA_NON_BASAL_1Mbp_hg19_LR.RData"))
+load(paste0(FILES_OUTDIR, "no_processing/markers_list_no_processing_BRCA_NON_BASAL_0.1Mbp_hg19_LR.RData"))
 markers_list_NON_BASAL <- markers_list
 
 if (BOOL_SIMPLE_AVG) {
@@ -111,3 +111,5 @@ if (BOOL_MAKE_PLOTS) {
 
 ################
 
+print("Done!")
+quit(save = "no", status = 0)

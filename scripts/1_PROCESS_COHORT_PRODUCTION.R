@@ -9,8 +9,8 @@ import_libraries()
 
 files_paths <- c("/home/ieo7429/Desktop/THESIS_GAB/scripts/H1_EPIANEUFINDER_BIN_FILTERING.R",
                  "/home/ieo7429/Desktop/THESIS_GAB/scripts/H1_NO_PROCESSING_VANILLA.R",
-                 "/home/ieo7429/Desktop/THESIS_GAB/scripts/H2.1_REGRESS_OUT_COHORT.R",
                  "/home/ieo7429/Desktop/THESIS_GAB/scripts/H1_LIFT_FILE.R",
+                 "/home/ieo7429/Desktop/THESIS_GAB/scripts/H2.1_REGRESS_OUT_COHORT.R",
                  "/home/ieo7429/Desktop/THESIS_GAB/scripts/my_makeWindows.R",
                  "/home/ieo7429/Desktop/THESIS_GAB/scripts/obsolete/PROCESS_ONE_SAMPLE.R")
 
@@ -24,9 +24,9 @@ load_variables(tables_dir = "/home/ieo7429/Desktop/THESIS_GAB/tables/",
                scripts_dir = "/home/ieo7429/Desktop/THESIS_GAB/scripts/",
                plots_outdir = "/home/ieo7429/Desktop/THESIS_GAB/plots/", 
                files_outdir = "/home/ieo7429/Desktop/THESIS_GAB/outfiles/",
-               samples_folder_path = "/home/ieo7429/Desktop/THESIS_GAB/samples/BRCA_BASAL/",
+               samples_folder_path = "/home/ieo7429/Desktop/THESIS_GAB/samples/BRCA_NON_BASAL/",
                match_tumor_cnc_path = paste0(TABLES_DIR, "MATCH_TUMOR_CNC"), 
-               cohort_ids_file_path = paste0(TABLES_DIR, "BRCA_BASAL_IDS"), 
+               cohort_ids_file_path = paste0(TABLES_DIR, "BRCA_NON_BASAL_IDS"), 
                blacklist_path = paste0(TABLES_DIR,"hg19_blacklist.v2.bed"), 
                chain_path = paste0(TABLES_DIR,"hg38ToHg19.over.chain"),
                unlifted_peaks_path = paste0(TABLES_DIR,"pancan_peaks"),
@@ -34,11 +34,12 @@ load_variables(tables_dir = "/home/ieo7429/Desktop/THESIS_GAB/tables/",
                bash_script = paste0(SCRIPTS_DIR,"filter_fragments.sh"),
                conda_env = "GAB_ENV",
                complementary = "no",
+               run_bash = FALSE,
                genome_assembly_str = "BSgenome.Hsapiens.UCSC.hg19", 
                genome_assembly = BSgenome.Hsapiens.UCSC.hg19, 
                genome_assembly_code = "hg19", 
-               window_size = 1000000, 
-               cancer_type = "BRCA_BASAL", 
+               window_size = 100000, 
+               cancer_type = "BRCA_NON_BASAL", 
                workers = 80, 
                alpha = 0.05, 
                barplot_title = "barplot_inspection_", 
@@ -46,8 +47,8 @@ load_variables(tables_dir = "/home/ieo7429/Desktop/THESIS_GAB/tables/",
                collapsed_DACRs_df_name = "collapsed_table_", 
                whole_genome_plot_name = "manhattan_whole_genome_", 
                mode = "no_processing_",
-               with_epianeufinder = TRUE,
-               lift_files = TRUE,
+               with_epianeufinder = FALSE,
+               lift_files = FALSE,
                make_plots = TRUE,
                test.use = "LR",
                exclude = c("chrY","chrM"),
@@ -143,19 +144,23 @@ if (BOOL_LIFT_FILES) {
 
 ################ FILTERING FRAGMENTS FILE ################
 
-params <- c(CANCER_TYPE, LIFTED_PEAKS_PATH, CONDA_ENV, COMPLEMENTARY)
-
-system2(BASH_SCRIPT, params)
+if(BOOL_RUN_BASH){
+  params <- c(CANCER_TYPE, LIFTED_PEAKS_PATH, CONDA_ENV, COMPLEMENTARY)
+  system2(BASH_SCRIPT, params)
+}
 
 ################
 
 ################ ADJUST EPIANEUFINDER TOOL SOURCE CODE ################
 
 # assign the source code the modified version of makeWindows in order to account for correct windows definition
-assignInNamespace("makeWindows", 
-                  my_makeWindows, 
-                  asNamespace("epiAneufinder"))
-
+if (BOOL_WITH_EPIANEUFINDER) {
+  
+  assignInNamespace("makeWindows", 
+                    my_makeWindows, 
+                    asNamespace("epiAneufinder"))
+  
+}
 ################
 
 ################ CONSIDERATIONS ABOUT COPY NUMBER ALTERATIONS ################ 
@@ -190,6 +195,7 @@ if (MODE == "no_processing_" && BOOL_WITH_EPIANEUFINDER){
 ################ 
 
 ################ COHORT PROCESSING WITH EPIANEUFINDER ###############
+
 if (BOOL_WITH_EPIANEUFINDER) {
   
   n_of_samples <- length(sample_ids)
@@ -244,6 +250,7 @@ if (BOOL_WITH_EPIANEUFINDER) {
     print("Done!")
     
     markers_list[[idx]] <- markers # add markers to the list
+    gc()
   }
 } else {
 ################
@@ -291,8 +298,10 @@ if (BOOL_WITH_EPIANEUFINDER) {
     print("Done!")
     
     markers_list[[idx]] <- markers # add markers to the list
+    gc()
   }
 }
+
 ################
 
 

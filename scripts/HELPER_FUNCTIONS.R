@@ -39,13 +39,14 @@ import_libraries <- function(){
 load_variables <- function(match_tumor_cnc_path = NULL, # load all needed variables
                            cohort_ids_file_path = NULL, 
                            blacklist_path = NULL, 
-                           samples_folder_path = NULL, 
+                           samples_folder_path = NULL,
                            chain_path = NULL,
                            unlifted_peaks_path = NULL, 
                            lifted_peaks_path = NULL,
                            bash_script = NULL,
                            conda_env = NULL,
                            complementary = NULL,
+                           run_bash = NULL,
                            plots_outdir = NULL, 
                            files_outdir = NULL,
                            seg_file_dir = NULL,
@@ -87,7 +88,10 @@ load_variables <- function(match_tumor_cnc_path = NULL, # load all needed variab
                            table_target_bin_filtering_path = NULL,
                            final_table_outpath = NULL,
                            training_dataset_path = NULL,
-                           centromere_table_path = NULL){
+                           centromere_table_path = NULL,
+                           bins_path_cooler = NULL,
+                           hic_matrix_cooler = NULL,
+                           hic_matrix_name = NULL){
   
   PLOTS_OUTDIR <<- plots_outdir # plots directories
   FILES_OUTDIR <<- files_outdir # files directories
@@ -175,6 +179,7 @@ load_variables <- function(match_tumor_cnc_path = NULL, # load all needed variab
     chrom_cum_start <<- c(0, cumsum(as.numeric(chrom_sizes_canon[-length(chrom_sizes_canon)]))) # get cumulative starts
     names(chrom_cum_start) <<- names(chrom_sizes_canon)
     
+    BOOL_RUN_BASH <<- run_bash
     BOOL_WITH_EPIANEUFINDER <<- with_epianeufinder
     BOOL_LIFT_FILES <<- lift_files
     BOOL_MAKE_PLOTS <<- make_plots
@@ -185,7 +190,7 @@ load_variables <- function(match_tumor_cnc_path = NULL, # load all needed variab
     new_assay_name <<- new_assay_name
     
     backbone_path <<- backbone_path
-    
+
     table_no_processing_path <<- table_no_processing_path
     table_regrout_path <<- table_regrout_path
     table_bin_filtering_path <<- table_bin_filtering_path
@@ -205,6 +210,10 @@ load_variables <- function(match_tumor_cnc_path = NULL, # load all needed variab
     training_dataset_path <<- training_dataset_path
     
     centromere_table_path <<- centromere_table_path
+    
+    bins_path_cooler <<- bins_path_cooler
+    hic_matrix_cooler <<- hic_matrix_cooler
+    hic_matrix_name <<- hic_matrix_name
     
   }
 }

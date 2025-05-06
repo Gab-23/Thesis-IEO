@@ -9,8 +9,8 @@ import_libraries()
 
 files_paths <- c("/home/ieo7429/Desktop/THESIS_GAB/scripts/H1_EPIANEUFINDER_BIN_FILTERING.R",
                  "/home/ieo7429/Desktop/THESIS_GAB/scripts/H1_NO_PROCESSING_VANILLA.R",
+                 "/home/ieo7429/Desktop/THESIS_GAB/scripts/H1_LIFT_FILE.R",
                  "/home/ieo7429/Desktop/THESIS_GAB/scripts/H2.1_REGRESS_OUT_COHORT.R",
-                 "/home/ieo7429/Desktop/THESIS_GAB/scripts/LIFT_FILE.R",
                  "/home/ieo7429/Desktop/THESIS_GAB/scripts/my_makeWindows.R")
 
 import_scripts(files_paths = files_paths)
@@ -26,9 +26,9 @@ load_variables(tables_dir = "/home/ieo7429/Desktop/THESIS_GAB/tables/",
                genome_assembly_str = "BSgenome.Hsapiens.UCSC.hg19", 
                genome_assembly = BSgenome.Hsapiens.UCSC.hg19, 
                genome_assembly_code = "hg19", 
-               window_size = 1000000, 
+               window_size = 100000, 
                cancer_type = "BRCA", 
-               accessibility_table_path = paste0(FILES_OUTDIR, "no_processing/collapsed_table_no_processing_BRCA_1Mbp_hg19_LR.tsv"),
+               accessibility_table_path = paste0(FILES_OUTDIR, "no_processing/collapsed_table_no_processing_BRCA_0.1Mbp_hg19_LR.tsv"),
                mode = "regrout_",
                make_plots = TRUE,
                backbone_path = paste0(TABLES_DIR,"backbone_", WINDOW_SIZE_STRING,".tsv"),
@@ -96,4 +96,9 @@ if (MODE == "regrout_") {
 }
 
 ################
+
+print("Done!")
+quit(save = "no", status = 0)
+
+
 
