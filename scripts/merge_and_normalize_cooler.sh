@@ -10,7 +10,12 @@ COOLER_PATHS=${@}
 
 if [ $1 = "-h" ] || [ $1 = "--help" ]; then
         echo -e "\n"
+	echo "
+This function performs downstream steps and is to be run after do_hic_pipeline.sh
+It merges multiple .cool matrices and performs ICE normalization in order to correct for different biases
+	"
         echo "HOW TO USE: "
+	echo -e "\n"
         echo "./do_hic_pipeline.sh 
  	[HIC_PROCESSING_ENVIRONMENT] 
 	[MERGED_OUTFILE] [MERGED_OUTFILE_SYMM]
@@ -21,23 +26,21 @@ if [ $1 = "-h" ] || [ $1 = "--help" ]; then
         exit 0
 fi
 
+# initialize conda
 source ~/miniconda3/etc/profile.d/conda.sh
 
+# activate conda environment
 echo "Activating $HIC_PROCESSING_ENVIRONMENT environment"
 conda activate $HIC_PROCESSING_ENVIRONMENT
 
+# merge .cool matrices
 echo "Merging coolers..."
 cooler merge $MERGED_OUTFILE $COOLER_PATHS
 
+# apply ICE normalization
 echo "Balancing merged cooler..."
 cooler balance -p $NUM_THREADS $MERGED_OUTFILE
 
-# echo "Symmetrizing matrix..."
-# cooler dump --balanced --join --fill-lower -o $MERGED_OUTFILE_SYMM $MERGED_OUTFILE
-
 echo "Done!"
 exit 0
-
-
-
 
