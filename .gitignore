@@ -1,10 +1,25 @@
+# Ignore these top-level directories
 gokce/
 outfiles/
 plots/
 samples/
 tables/
 bulk_ATAC_pipeline_processing/
-scripts/hic_qc/
 HiC_pipeline_processing/
 RepliSeq_pipeline_processing/
 segmentation_files_all_cohorts/
+scripts/hic_qc/
+
+# Ignore ipynb checkpoints within ML
+ML/**/.ipynb_checkpoints/
+
+# Ignore everything under ML
+ML/*
+
+# Unignore ML folders
+!ML/
+!ML/**/
+
+# Include only .ipynb files
+!ML/**/*.ipynb
+
