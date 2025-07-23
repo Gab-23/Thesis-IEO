@@ -212,8 +212,8 @@ if [ ! -f $OUTFILE_COOL_MATRIX ]; then
 	echo "Cooling the data..."
 	# create the .cool matrix
 	cooler cload pairs -c1 2 -p1 3 \
-		--no-symmetric-upper \
 		-c2 4 -p2 5 \
+		--no-symmetric-upper \
        		--assembly $ASSEMBLY_CODE \
       		$BACKBONE_CLEAN_NO_HEADER \
       		$OUTFILE_NODUPS_UU_PAIRS \

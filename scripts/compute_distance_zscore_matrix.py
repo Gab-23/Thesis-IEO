@@ -1,10 +1,4 @@
 import sys
-import cooler
-import warnings
-import numpy as np
-import pandas as pd
-
-warnings.filterwarnings("ignore")
 
 if (sys.argv[1] == "-h") or (sys.argv[1] == "--help"):
     print("\n")
@@ -20,6 +14,13 @@ if (sys.argv[1] == "-h") or (sys.argv[1] == "--help"):
     print("python compute_distance_zscore_matrix.py [COOL_PATH] [OUTFILE_MATRIX_ZSCORE] [OUTFILE_BINS]")
     print("\n")
     exit(0)
+
+import cooler
+import warnings
+import numpy as np
+import pandas as pd
+
+warnings.filterwarnings("ignore")
 
 COOL_PATH = sys.argv[1]
 OUTFILE_MATRIX_ZSCORE = sys.argv[2]

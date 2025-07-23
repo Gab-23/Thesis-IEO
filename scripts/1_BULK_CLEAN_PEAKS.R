@@ -16,11 +16,13 @@ lapply(X = seq_along(along.with = summit_paths), FUN = function(x){
   curr_expanded <- outfile_paths[x]
   
   params <- c(curr_summit, "/home/ieo7429/Desktop/hg19/hg19.chrom.sizes.canon",
-            5000, curr_expanded)
+            250, curr_expanded)
 
   system2("/home/ieo7429/Desktop/THESIS_GAB/scripts/expand_summits.sh", params)
   
 }) # expand the summits
+
+# concatenate the files from different samples according to condition
 
 total_peaks_paths <- list.files(path = ".", recursive = T, pattern = "total") # get the total peaks paths
 
@@ -35,7 +37,7 @@ total_peaks_list <- lapply(X = total_peaks_paths, FUN = function(x){
   
   tab <- GRanges(tab)
 
-  }) # conver them to GRanges
+  }) # convert them to GRanges
 
 get_peaks_to_keep <- function(peaks_granges_sorted, n_workers, stringency = 0.5){ 
   

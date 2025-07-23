@@ -1,7 +1,7 @@
 #!/bin/bash
 
 HIC_PROCESSING_ENVIRONMENT=$1
-MERGED_OUTFILE=$2; #  MERGED_OUTFILE_SYMM=$3
+MERGED_OUTFILE=$2;
 NUM_THREADS=$3
 
 shift 3
@@ -18,7 +18,7 @@ It merges multiple .cool matrices and performs ICE normalization in order to cor
 	echo -e "\n"
         echo "./do_hic_pipeline.sh 
  	[HIC_PROCESSING_ENVIRONMENT] 
-	[MERGED_OUTFILE] [MERGED_OUTFILE_SYMM]
+	[MERGED_OUTFILE]
        	[NUM_THREADS] 
 	[COOLER_PATHS]
        	"

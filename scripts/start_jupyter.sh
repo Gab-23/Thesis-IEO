@@ -15,5 +15,5 @@ fi
 
 conda activate jupyter_notebook_env
 
-jupyter notebook --no-browser --port=$PORT_NUMBER
+~/miniconda3/envs/jupyter_notebook_env/bin/jupyter notebook --no-browser --port=$PORT_NUMBER
 

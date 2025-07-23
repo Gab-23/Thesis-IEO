@@ -3,5 +3,8 @@ outfiles/
 plots/
 samples/
 tables/
-bulk_ATAC/
+bulk_ATAC_pipeline_processing/
 scripts/hic_qc/
+HiC_pipeline_processing/
+RepliSeq_pipeline_processing/
+segmentation_files_all_cohorts/

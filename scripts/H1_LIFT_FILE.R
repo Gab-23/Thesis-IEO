@@ -1,4 +1,4 @@
-LIFT_FILE <- function(file_path, chain_path, mode){
+LIFT_FILE <- function(file_path, chain_path, mode, width_thr){ # added width_thr and commented out SCREEN cCREs annotation processing
   
   options(scipen=999) # remove scientific notation so that big numbers are not written like 1e+08 
   
@@ -12,8 +12,13 @@ LIFT_FILE <- function(file_path, chain_path, mode){
   
   if (mode == "fragments") {
     
+    
     colnames(file_tab) <- c("chr", "start", "end", "barcode", "pcr") # set the colnames
     values(granges_unlifted) <- DataFrame(barcode = file_tab$barcode, pcr = file_tab$pcr) # set the metadata
+    
+    # colnames(file_tab) <- c("chr", "start", "end", "ID1", "ID2", "annot")
+    # values(granges_unlifted) <- DataFrame(annot = file_tab$annot)
+    # outfile_name <- "../../../table/GRCh37-cCREs.bed"
     
     outfile_name <- paste0(paste0(file_path_parts[1], "_lifted"), # set the output filename
                            ".", file_path_parts[2],
@@ -24,6 +29,9 @@ LIFT_FILE <- function(file_path, chain_path, mode){
     
     lifted_granges_filtered <- lifted_granges[-mappings_to_discard]
     lifted_granges_filtered_unlisted <- unlist(lifted_granges_filtered) # get the GRanges object, note that when unlisting, mapping failures (encoded as empty GRanges) will disappear
+    
+    # widths_to_discard <- which(lifted_granges_filtered_unlisted@ranges@width < width_thr)
+    # lifted_granges_filtered_unlisted <- lifted_granges_filtered_unlisted[-widths_to_discard]
     
     lifted_granges_filtered_unlisted_sorted <- sort(lifted_granges_filtered_unlisted)
     invalid_idx <- which(start(lifted_granges_filtered_unlisted_sorted) > end(lifted_granges_filtered_unlisted_sorted))
@@ -58,6 +66,8 @@ LIFT_FILE <- function(file_path, chain_path, mode){
                 sep="\t", 
                 quote=FALSE, row.names=FALSE, col.names=FALSE)
     
+    # write.table(x = df, file = outfile_name, sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE)
+    
     
   } else if (mode == "peaks") {
     
@@ -70,7 +80,7 @@ LIFT_FILE <- function(file_path, chain_path, mode){
     lifted_granges_filtered <- lifted_granges[-mappings_to_discard]
     lifted_granges_filtered_unlisted <- unlist(lifted_granges_filtered)
     
-    widths_to_discard <- which(lifted_granges_filtered_unlisted@ranges@width < 500) # sanity check: original peaks were 500 bp long. If < 500, then I discard (arbitrary threshold)
+    widths_to_discard <- which(lifted_granges_filtered_unlisted@ranges@width < width_thr) # sanity check: original peaks were 500 bp long. If < 500, then I discard (arbitrary threshold)
     
     lifted_granges_filtered_unlisted_clean <- lifted_granges_filtered_unlisted[-widths_to_discard]
     

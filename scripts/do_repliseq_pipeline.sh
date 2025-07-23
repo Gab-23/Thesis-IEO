@@ -10,15 +10,16 @@ BAMQC_OUTDIR=${12}
 IS_PATTERNED=${13}; DEDUP_BAM=${14}; DEDUP_METRICS=${15}
 FILTERED_BAM=${16}
 BLACKLISTED_REGIONS=${17}
-NO_BLACKLISTED_BAM=${18}
-BINFILE=${19}
+NO_BLACKLISTED_BAM=${18}; NO_BLACKLISTED_SORTED_BAM=${19}
+BINFILE=${20}; OUTFILE_COVERAGE=${21}
 
 if [ $1 = "-h" ] || [ $1 = "--help" ]; then
 	echo -e "\n"
-	echo "placeholder text"
+	echo "This pipeline aims at processing Repliseq data, 
+	      starting from the reads and finally reaching the coverage tracks"
 	echo "HOW TO USE: "
 	echo -e "\n"
-	echo "./do_hic_pipeline.sh 
+	echo "./do_repliseq_pipeline.sh 
   [OUTDIR_FASTQ] [READ_FWD] [READ_REV]
   [NUM_THREADS]
   [INDEX] 
@@ -26,21 +27,21 @@ if [ $1 = "-h" ] || [ $1 = "--help" ]; then
   [INITIAL_BAM] [INITIAL_SORTED_BAM] 
   [CANON_BAM] [CANON_SORTED_BAM]
   [BAMQC_OUTDIR]
-  [DEDUP_BAM] [DEDUP_METRICS]
+  [IS_PATTERNED] [DEDUP_BAM] [DEDUP_METRICS]
   [FILTERED_BAM]
   [BLACKLISTED_REGIONS]
-  [NO_BLACKLISTED_BAM]
-  [BINFILE]	
+  [NO_BLACKLISTED_BAM] [NO_BLACKLISTED_SORTED_BAM]
+  [BINFILE] [OUTFILE_COVERAGE]
 	"
   	echo -e "\n"
 	exit 0
 fi
 
 source ~/miniconda3/etc/profile.d/conda.sh # initialize conda
-conda activate repliseq_env # activate environment
+conda activate atacseq_preproc # activate environment
 echo "Activated ATAC-seq preprocessing environment"
 
-if [ ! -f $cicciopasticcio ]; then
+if [ ! -f $READ_VAL_FWD ] || [ ! -f $READ_VAL_REV ]; then
 	echo "Trimming reads..."
 	# trim reads using TrimGalore!
 	trim_galore --fastqc --gzip --paired -o $OUTDIR_FASTQ $READ_FWD $READ_REV
@@ -48,10 +49,10 @@ else
 	echo "Skipping read trimming step"
 fi
 
-if [ ! -f $cicciopasticcio ]; then
+if [ ! -f $NO_BLACKLISTED_BAM ]; then
 	echo "Aligning reads..."
 	# align reads on reference genome using bwa-mem
-	bwa mem -t $NUM_THREADS $INDEX $READS_VAL_FWD $READS_VAL_REV |  samtools view -S -h -b > $INITIAL_BAM
+	bwa mem -t $NUM_THREADS $INDEX $READ_VAL_FWD $READ_VAL_REV |  samtools view -S -h -b > $INITIAL_BAM
 else
 	echo "Skipping alignment step"
 fi
@@ -132,21 +133,44 @@ else
 fi
 
 if [ ! -f $NO_BLACKLISTED_BAM ]; then
+	echo "Filtering deduplicated BAM file"
+	# remove reads based on bitwise flags
+	samtools view -@ $NUM_THREADS -q 20 -b $DEDUP_BAM > $FILTERED_BAM
+else
+	echo "Skipping filtering of deduplicated BAM file"
+fi
+
+if [ ! -f $NO_BLACKLISTED_BAM ]; then
 	echo "Removing blacklisted regions from BAM file"
 	# remove blacklisted regions
-	bedtools intersect -v -abam $DEDUP_BAM -b $BLACKLISTED_REGIONS > $NO_BLACKLISTED_BAM
+	bedtools intersect -v -abam $FILTERED_BAM -b $BLACKLISTED_REGIONS > $NO_BLACKLISTED_BAM
 else
 	echo "Skipping blacklisted regions removal"
+fi
+
+if [ ! -f $NO_BLACKLISTED_SORTED_BAM ]; then
+	echo "Sorting canon BAM file"
+	# sort BAM
+	samtools sort -@ $NUM_THREADS -o $NO_BLACKLISTED_SORTED_BAM $NO_BLACKLISTED_BAM
+else
+	echo "Skipping noblack BAM file sorting"
+fi
+
+if [ ! -f "$NO_BLACKLISTED_SORTED_BAM.bai" ]; then
+	echo "Indexing canon BAM file"
+	# index BAM
+	samtools index -@ $NUM_THREADS $NO_BLACKLISTED_SORTED_BAM
+else
+	echo "Skipping noblack BAM file indexing"
+fi
 
 if [ ! -f $OUTFILE_COVERAGE ]; then
 	# compute coverage
-	bedtools coverage -counts -sorted -a $BINFILE -b $NO_BLACKLISTED_BAM > $OUTFILE_COVERAGE
+	bedtools coverage -counts -a $BINFILE -b $NO_BLACKLISTED_SORTED_BAM > $OUTFILE_COVERAGE
 else
 	echo "Skipping coverage computation"
 fi
 
 echo "Done"
 exit 0
-
-
 
