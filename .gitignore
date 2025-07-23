@@ -1,3 +1,6 @@
+# Ignore all .ipynb_checkpoints folders anywhere in the repo
+.ipynb_checkpoints/
+
 # Ignore these top-level directories
 gokce/
 outfiles/
@@ -10,16 +13,16 @@ RepliSeq_pipeline_processing/
 segmentation_files_all_cohorts/
 scripts/hic_qc/
 
-# Ignore ipynb checkpoints within ML
+# Ignore .ipynb_checkpoints within ML folder (redundant but harmless)
 ML/**/.ipynb_checkpoints/
 
 # Ignore everything under ML
 ML/*
 
-# Unignore ML folders
+# Unignore ML folders themselves so Git can traverse into subfolders
 !ML/
 !ML/**/
 
-# Include only .ipynb files
+# Include only .ipynb files inside ML folder
 !ML/**/*.ipynb
 
